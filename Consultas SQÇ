@@ -1,0 +1,40 @@
+-- PRODUTOS MAIS VENDIDOS
+SELECT 
+  p.nome AS Produto,
+  COUNT(pe.ID_Produto) AS Quantidade_Vendida
+FROM Pedidos pe
+JOIN Produto p ON pe.ID_Produto = p.ID_Produto
+GROUP BY pe.ID_Produto
+ORDER BY Quantidade_Vendida DESC;
+
+-- CLIENTES QUE MAIS COMPRARAM NO ÚLTIMO MES
+SELECT 
+  u.nome AS Cliente,
+  COUNT(pe.ID_Pedidos) AS Total_Compras
+FROM Pedidos pe
+JOIN Usuario u ON pe.ID_Usuario = u.ID_Usuario
+WHERE MONTH(pe.Data_Pedido) = 3 AND YEAR(pe.Data_Pedido) = 2025
+GROUP BY pe.ID_Usuario
+ORDER BY Total_Compras DESC;
+
+-- ORDEM DOS PRODUTOS COM MENOS QUANTIDADE
+SELECT 
+  nome AS Produto,
+  quantidade_estoque
+FROM Produto
+ORDER BY quantidade_estoque ASC;
+
+-- FATURAMENTO DO ULTIMO PERIODO
+SELECT 
+  SUM(valor_total) AS Faturamento_Total
+FROM Pagamentos
+WHERE data_pagamento BETWEEN '2025-03-01' AND '2025-03-31';
+
+
+-- MEDIA DE AVALIAÇÃO POR PRODUTO (1-5)
+SELECT 
+  p.nome AS Produto,	
+  ROUND(AVG(a.Nota), 2) AS Media_Avaliacao
+FROM Avaliacoes a
+JOIN Produto p ON a.ID_Produto = p.ID_Produto
+GROUP BY a.ID_Produto;

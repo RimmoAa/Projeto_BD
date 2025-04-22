@@ -1,0 +1,170 @@
+
+-- APAGAR O BANCO SE JÁ EXISTIR E CRIAR NOVAMENTE
+DROP DATABASE IF EXISTS ProjetoBancoDeDados;
+CREATE DATABASE ProjetoBancoDeDados;
+USE ProjetoBancoDeDados;
+
+-- TABELA USUÁRIO
+CREATE TABLE Usuario (
+  ID_Usuario INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  nome VARCHAR(80) NOT NULL,
+  Telefone BIGINT NOT NULL,
+  email VARCHAR(80) NOT NULL UNIQUE,
+  Status ENUM('cliente', 'admin') NOT NULL,
+  PRIMARY KEY (ID_Usuario)
+);
+
+INSERT INTO Usuario VALUES
+(DEFAULT, 'Arthur', 923456789, 'A@gmail.com','cliente'),
+(DEFAULT, 'Bruna', 988123344, 'B@gmail.com','cliente'),
+(DEFAULT, 'Carlos', 997772211, 'C@gmail.com','cliente'),
+(DEFAULT, 'Diego', 965430001, 'D@gmail.com','admin'),
+(DEFAULT, 'Enrico', 981234567, 'E@gmail.com','admin');
+
+-- TABELA PRODUTO
+CREATE TABLE Produto (
+  ID_Produto INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  nome VARCHAR(100),
+  descricao VARCHAR(100),
+  categoria VARCHAR(50),
+  preco DECIMAL(10,2),
+  quantidade_estoque INT,
+  fornecedor VARCHAR(100),
+  PRIMARY KEY (ID_Produto)
+);
+
+INSERT INTO Produto VALUES
+(DEFAULT, 'Sapato', 'Para Botar nos Pés', 'PÉ', 20.00, 100, 'Sapataria'),
+(DEFAULT, 'Camisa', 'Para Botar na parte de cima do corpo', 'TRONCO', 30.00, 25, 'Camisaria'),
+(DEFAULT, 'Chapéu', 'Para Botar na cabeça', 'CABEÇA', 5.00, 150, 'Chapelaria'),
+(DEFAULT, 'Luva', 'Para Botar na mão', 'MÃOS', 12.00, 75, 'Luvaria');
+
+-- TABELA PEDIDOS
+CREATE TABLE Pedidos (
+  ID_Pedidos INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  Data_entrega DATE,
+  Data_Pedido DATE,
+  ID_Produto INT UNSIGNED NOT NULL,
+  ID_Usuario INT UNSIGNED NOT NULL,
+  PRIMARY KEY (ID_Pedidos),
+  FOREIGN KEY (ID_Produto) REFERENCES Produto(ID_Produto),
+  FOREIGN KEY (ID_Usuario) REFERENCES Usuario(ID_Usuario)
+);
+
+INSERT INTO Pedidos VALUES
+(DEFAULT, '2025-04-01', '2025-03-15', 1,1), 
+(DEFAULT, '2025-04-10', '2025-03-20', 2,1), 
+(DEFAULT, '2025-03-20', '2025-03-01', 3,1), 
+(DEFAULT, '2025-03-09', '2025-03-02', 2,5),
+(DEFAULT, '2025-02-09', '2025-02-02', 4,4),
+(DEFAULT, '2025-04-09', '2025-04-02', 1,1),
+(DEFAULT, '2025-04-05', '2025-03-28', 3,3),
+(DEFAULT, '2025-03-09', '2025-03-02', 2,2),
+(DEFAULT, '2025-03-09', '2025-03-02', 2,1);
+
+-- TABELA AVALIAÇÕES
+CREATE TABLE Avaliacoes (
+  ID_Avaliacao INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  Nota INT CHECK (Nota BETWEEN 1 AND 5),
+  Comentario TEXT,
+  ID_Produto INT UNSIGNED NOT NULL,
+  ID_Usuario INT UNSIGNED NOT NULL,
+  PRIMARY KEY (ID_Avaliacao),
+  FOREIGN KEY (ID_Usuario) REFERENCES Usuario(ID_Usuario),
+  FOREIGN KEY (ID_Produto) REFERENCES Produto(ID_Produto)
+);
+
+INSERT INTO Avaliacoes VALUES
+(DEFAULT, 5, 'Muito bom', 1,1), 
+(DEFAULT, 2, 'Meio ruim', 2,1),
+(DEFAULT, 1, 'Muito ruim', 3,1), 
+(DEFAULT, 5, 'Muito bom', 2,5),
+(DEFAULT, 3, 'Mais ou menos', 4,4),
+(DEFAULT, 3, 'Mais ou menos', 1,1),
+(DEFAULT, 4, 'Bom', 3,3),
+(DEFAULT, 4, 'Bom', 2,2),
+(DEFAULT, 1, 'Muito ruim', 2,1);
+
+-- TABELA ENTREGAS
+CREATE TABLE Entregas (
+  ID_Entrega INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  ID_Pedidos INT UNSIGNED NOT NULL,
+  endereco TEXT,
+  status_entrega VARCHAR(50),
+  PRIMARY KEY (ID_Entrega),
+  FOREIGN KEY (ID_Pedidos) REFERENCES Pedidos(ID_Pedidos)
+);
+
+INSERT INTO Entregas VALUES
+(DEFAULT, 1, 'Rua das Flores, 123 – Centro', 'Enviando'), 
+(DEFAULT, 2, 'Avenida Brasil, 456 – Jardim América', 'Enviando'),
+(DEFAULT, 3, 'Rua das Acácias, 789 – Vila Nova', 'Entregue'), 
+(DEFAULT, 4, 'Avenida Paulista, 1000 – Bela Vista', 'Entregue'),
+(DEFAULT, 5, 'Rua do Sol, 321 – Parque Verde', 'Entregue'),
+(DEFAULT, 6, 'Rua São José, 654 – Alto da Serra', 'Entregue'),
+(DEFAULT, 7, 'Avenida Atlântica, 888 – Copacabana', 'Entregue'),
+(DEFAULT, 8, 'Rua Esperança, 432 – Bairro Feliz', 'Entregue'),
+(DEFAULT, 9, 'Travessa Mar Azul, 27 – Costa Sul', 'Entregue');
+
+-- TABELA PAGAMENTOS
+CREATE TABLE Pagamentos (
+  ID_Pagamento INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  ID_Pedidos INT UNSIGNED NOT NULL,
+  metodo_pagamento VARCHAR(50),
+  valor_total DECIMAL(10,2),
+  data_pagamento DATE,
+  PRIMARY KEY (ID_Pagamento),
+  FOREIGN KEY (ID_Pedidos) REFERENCES Pedidos(ID_Pedidos)
+);
+
+INSERT INTO Pagamentos VALUES
+(DEFAULT, 1, 'PIX', 20.00, '2025-03-15'), 
+(DEFAULT, 2, 'PIX', 30.00, '2025-03-20'),
+(DEFAULT, 3, 'Cartão', 5.00, '2025-03-01'), 
+(DEFAULT, 4, 'Boleto', 30.00, '2025-03-02'),
+(DEFAULT, 5, 'Cartão', 12.00, '2025-02-02'),
+(DEFAULT, 6, 'Boleto', 20.00, '2025-04-02'),
+(DEFAULT, 7, 'PIX', 5.00, '2025-03-28'),
+(DEFAULT, 8, 'PIX', 30.00, '2025-03-02'),
+(DEFAULT, 9, 'Cartão', 30.00, '2025-03-02');
+
+-- PRODUTOS MAIS VENDIDOS
+SELECT 
+  p.nome AS Produto,
+  COUNT(pe.ID_Produto) AS Quantidade_Vendida
+FROM Pedidos pe
+JOIN Produto p ON pe.ID_Produto = p.ID_Produto
+GROUP BY pe.ID_Produto
+ORDER BY Quantidade_Vendida DESC;
+
+-- CLIENTES QUE MAIS COMPRARAM NO ÚLTIMO MES
+SELECT 
+  u.nome AS Cliente,
+  COUNT(pe.ID_Pedidos) AS Total_Compras
+FROM Pedidos pe
+JOIN Usuario u ON pe.ID_Usuario = u.ID_Usuario
+WHERE MONTH(pe.Data_Pedido) = 3 AND YEAR(pe.Data_Pedido) = 2025
+GROUP BY pe.ID_Usuario
+ORDER BY Total_Compras DESC;
+
+-- ORDEM DOS PRODUTOS COM MENOS QUANTIDADE
+SELECT 
+  nome AS Produto,
+  quantidade_estoque
+FROM Produto
+ORDER BY quantidade_estoque ASC;
+
+-- FATURAMENTO DO ULTIMO PERIODO
+SELECT 
+  SUM(valor_total) AS Faturamento_Total
+FROM Pagamentos
+WHERE data_pagamento BETWEEN '2025-03-01' AND '2025-03-31';
+
+
+-- MEDIA DE AVALIAÇÃO POR PRODUTO (1-5)
+SELECT 
+  p.nome AS Produto,	
+  ROUND(AVG(a.Nota), 2) AS Media_Avaliacao
+FROM Avaliacoes a
+JOIN Produto p ON a.ID_Produto = p.ID_Produto
+GROUP BY a.ID_Produto;

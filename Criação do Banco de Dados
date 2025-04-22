@@ -1,0 +1,71 @@
+-- APAGAR O BANCO SE JÁ EXISTIR E CRIAR NOVAMENTE
+DROP DATABASE IF EXISTS ProjetoBancoDeDados;
+CREATE DATABASE ProjetoBancoDeDados;
+USE ProjetoBancoDeDados;
+
+-- TABELA USUÁRIO
+CREATE TABLE Usuario (
+  ID_Usuario INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  nome VARCHAR(80) NOT NULL,
+  Telefone BIGINT NOT NULL,
+  email VARCHAR(80) NOT NULL UNIQUE,
+  Status ENUM('cliente', 'admin') NOT NULL,
+  PRIMARY KEY (ID_Usuario)
+);
+
+-- TABELA PRODUTO
+CREATE TABLE Produto (
+  ID_Produto INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  nome VARCHAR(100),
+  descricao VARCHAR(100),
+  categoria VARCHAR(50),
+  preco DECIMAL(10,2),
+  quantidade_estoque INT,
+  fornecedor VARCHAR(100),
+  PRIMARY KEY (ID_Produto)
+);
+
+-- TABELA PEDIDOS
+CREATE TABLE Pedidos (
+  ID_Pedidos INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  Data_entrega DATE,
+  Data_Pedido DATE,
+  ID_Produto INT UNSIGNED NOT NULL,
+  ID_Usuario INT UNSIGNED NOT NULL,
+  PRIMARY KEY (ID_Pedidos),
+  FOREIGN KEY (ID_Produto) REFERENCES Produto(ID_Produto),
+  FOREIGN KEY (ID_Usuario) REFERENCES Usuario(ID_Usuario)
+);
+
+-- TABELA AVALIAÇÕES
+CREATE TABLE Avaliacoes (
+  ID_Avaliacao INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  Nota INT CHECK (Nota BETWEEN 1 AND 5),
+  Comentario TEXT,
+  ID_Produto INT UNSIGNED NOT NULL,
+  ID_Usuario INT UNSIGNED NOT NULL,
+  PRIMARY KEY (ID_Avaliacao),
+  FOREIGN KEY (ID_Usuario) REFERENCES Usuario(ID_Usuario),
+  FOREIGN KEY (ID_Produto) REFERENCES Produto(ID_Produto)
+);
+
+-- TABELA ENTREGAS
+CREATE TABLE Entregas (
+  ID_Entrega INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  ID_Pedidos INT UNSIGNED NOT NULL,
+  endereco TEXT,
+  status_entrega VARCHAR(50),
+  PRIMARY KEY (ID_Entrega),
+  FOREIGN KEY (ID_Pedidos) REFERENCES Pedidos(ID_Pedidos)
+);
+
+-- TABELA PAGAMENTOS
+CREATE TABLE Pagamentos (
+  ID_Pagamento INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  ID_Pedidos INT UNSIGNED NOT NULL,
+  metodo_pagamento VARCHAR(50),
+  valor_total DECIMAL(10,2),
+  data_pagamento DATE,
+  PRIMARY KEY (ID_Pagamento),
+  FOREIGN KEY (ID_Pedidos) REFERENCES Pedidos(ID_Pedidos)
+);
